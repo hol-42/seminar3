@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+<body>
+  <h1>Chat</h1>
+  <div ng-app="myApp" ng-controller="myCtrl">
+  <form ng-submit="add()">
+    <input type="text" ng-model="msg">
+    <input type="submit">
+  </form>
+  <div ng-repeat="m in msgs | reverse">
+    {{m}}
+  </div>
+
+</div>
+
+<script>
+// Zuerst eröffnen wir die Angular APP
+var app = angular.module('myApp', []);
+
+// Dann definieren wir einen Controller
+app.controller('myCtrl', function($scope) {
+    // Wird am Anfang durchlaufen
+    $scope.msgs = [];
+    // Funktion die von ng-submit referenziert wird, fügt die Eingabe
+    // im Array am Ende hinzu und löscht das Eingabefeld indirekt
+    $scope.add = function () {
+      $scope.msgs.push($scope.msg);
+      $scope.msg = '';
+    };
+});
+
+// Diese ist eine weiteres NG Feature. Ein Filter. 
+// Dreht eine Array herum. Übergeben wird
+// 1) Name des Filters, damit er im HTML angesprochen weden kann
+// 2) Eine Funktion, die ausgeführt wird und die wiederrum eine Funktion 
+//    zurück liefert. Diese Funktion nimmt als Parameter ein Array 
+//    und wendet dann die Funktion slice() auf den Array, was eine
+//    Kopie des Arrays ergibt und auf diese Kopie wird reverse() angewendet
+app.filter('reverse', function() {
+  return function(items) {
+    return items.slice().reverse();
+  };
+});
+</script>
+
+</body>
+</html>

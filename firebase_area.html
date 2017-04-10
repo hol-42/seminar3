@@ -1,0 +1,71 @@
+<!doctype html>
+<html ng-app="sampleApp">
+
+  <head>
+    <!-- Angular -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular.min.js"></script>
+    
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/3.7.5/firebase.js"></script>
+    
+    <!-- AngularFire -->
+    <script src="https://cdn.firebase.com/libs/angularfire/2.3.0/angularfire.min.js"></script>  </head>
+  <body>
+
+<script>
+  // Initialize Firebase. Das erhält man von Firebase per Cut&Paste
+  var config = {
+    apiKey: "AIzaSyCbmCYmfr5AgvdJG1GjgXnrwD33Fw2Y7Rw",
+    authDomain: "chat-406a0.firebaseapp.com",
+    databaseURL: "https://chat-406a0.firebaseio.com",
+    projectId: "chat-406a0",
+    storageBucket: "chat-406a0.appspot.com",
+    messagingSenderId: "618997899428"
+  };
+  // damit wird Firebase aufgestartet
+  var fbApp = firebase.initializeApp(config);
+
+  // In der Hiearchie haben wir jetzt ein Modul, das Controller haben kann
+  // dem Modul übergeben wir "firebase", was eine sogenannte Dependency Injection
+  // bedeutet nur, dass wir einfach was zum später aufrufen mitgeben
+  var app = angular.module("sampleApp", ["firebase"]);
+  
+  // Jetzt kommt noch ein Kontroller dazu. 
+  // Anlegen des Controllers: 
+  // Parameter 1) Name wie er im HTML verwendet werden
+  // 2) Eine Funktion, die aufgerufen wird
+  app.controller("SampleCtrl", function($scope, $firebaseArray) {
+    // Die Nachrichten alle unter "message"
+    var ref = firebase.database().ref().child("messages");
+    // Die Scope Variable (HTML) wird auf Firebase gelinkt als Array
+    $scope.messages = $firebaseArray(ref);
+    // add new items to the array
+    // the message is automatically added to our Firebase database!
+    $scope.addMessage = function() {
+    $scope.messages.$add({
+      text: $scope.newMessageText
+    });
+  };
+});
+
+// Das ist noch ein Filter mit dem die Anzeige Reihenfolge 
+app.filter('reverse', function() {
+  return function(items) {
+    return items.slice().reverse();
+  };
+});
+</script>
+<html ng-app="sampleApp">
+  <body ng-controller="SampleCtrl">
+    <!-- push a new message onto the array -->
+    <form ng-submit="addMessage()">
+      <input ng-model="newMessageText" />
+      <button type="submit">Add Message</button>
+    </form>
+    <ul>
+      <li ng-repeat="message in messages | reverse">
+        {{ message.text }}
+      </li>
+    </ul>
+  </body>
+</html>
